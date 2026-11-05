@@ -26,11 +26,11 @@ YANDEX_REVIEW_ID_FILE = "yandex_review_ids.txt"
 YANDEX_SENT_IDS_FILE = "yandex_sent_ids.txt"
 YANDEX_CSV_FILE = "yandex_reviews.csv"
 
-API_KEY = "6e7e1929-4ea9-4a5d-8c05-d601860389bd"
-BRANCH_URLS = ["https://2gis.ru/vladivostok/firm/70000001102820158"]
-YANDEX_IDS = [163055877176]
-API_TOKEN = ""
-CHANNEL_ID = -1002998637584
+API_KEY = "6e7e1929-4ea9-4a5d-8c05-d601860389bd" 
+BRANCH_URLS = [""]
+YANDEX_IDS = [1654386580]
+API_TOKEN = "9013815502:AAEs_kGOJWssf8i9sz4tYlxh2lsSbKhO42I" # add api_token 5.11.26
+CHANNEL_ID = -1003980122727 # add chanel id 5.11.26
 
 # Инициализация бота
 bot = Bot(
@@ -91,53 +91,53 @@ class Parser:
             self.__scroll_to_bottom(new_elems[-1])
 
     def __get_data_item(self, elem):
-        try:
-            name = elem.find_element(By.XPATH, ".//span[@itemprop='name']").text
-        except NoSuchElementException:
-            name = None
+        name = None
+        for el in elem.find_elements(By.XPATH, ".//span[@itemprop='name']"):
+            name = el.text
+            break
 
-        try:
-            icon_style = elem.find_element(By.XPATH, ".//div[contains(@class, 'user-icon-view__icon')]").get_attribute('style')
-            icon_href = re.findall(r'url\("?(.*?)"?\)', icon_style)[0] if icon_style else None
-        except NoSuchElementException:
-            icon_href = None
+        icon_href = None
+        for el in elem.find_elements(By.XPATH, ".//div[contains(@class, 'user-icon-view__icon')]"):
+            style = el.get_attribute('style') or ""
+            m = re.findall(r'url\("?(.*?)"?\)', style)
+            icon_href = m[0] if m else None
+            break
 
-        try:
-            date = elem.find_element(By.XPATH, ".//meta[@itemprop='datePublished']").get_attribute('content')
-        except NoSuchElementException:
-            date = None
+        date = None
+        for el in elem.find_elements(By.XPATH, ".//meta[@itemprop='datePublished']"):
+            date = el.get_attribute('content')
+            break
 
         text = None
-        try:
-            review_body = elem.find_element(By.CLASS_NAME, "business-review-view__body")
-            text_elements = review_body.find_elements(By.CLASS_NAME, "spoiler-view__text-container")
-            if text_elements:
-                text = text_elements[0].text
+        bodies = elem.find_elements(By.CLASS_NAME, "business-review-view__body")
+        if bodies:
+            body = bodies[0]
+            for el in body.find_elements(By.CLASS_NAME, "spoiler-view__text-container"):
+                text = el.text
+                break
             if not text:
-                text_elements = review_body.find_elements(By.XPATH, ".//span[contains(@class, 'business-review-view__body-text')]")
-                if text_elements:
-                    text = text_elements[0].text
+                for el in body.find_elements(By.XPATH, ".//span[contains(@class, 'business-review-view__body-text')]"):
+                    text = el.text
+                    break
             if not text:
-                text = review_body.text
-        except NoSuchElementException:
-            text = None
+                text = body.text
 
-        try:
-            stars = elem.find_elements(By.XPATH, ".//div[contains(@class, 'business-rating-badge-view__stars')]/span")
+        stars_count = 0
+        stars = elem.find_elements(By.XPATH, ".//div[contains(@class, 'business-rating-badge-view__stars')]/span")
+        if stars:
             stars_count = ParserHelper.get_count_star(stars)
-        except NoSuchElementException:
-            stars_count = 0
 
         answer = None
-        try:
-            # Пытаемся найти кнопку раскрытия ответа компании
-            answer_btn = elem.find_elements(By.CLASS_NAME, "business-review-view__comment-expand")
-            if answer_btn:
-                self.driver.execute_script("arguments[0].click()", answer_btn[0])
+        btns = elem.find_elements(By.CLASS_NAME, "business-review-view__comment-expand")
+        if btns:
+            try:
+                self.driver.execute_script("arguments[0].click()", btns[0])
                 time.sleep(0.5)
-                answer = elem.find_element(By.CLASS_NAME, "business-review-comment-content__bubble").text
-        except NoSuchElementException:
-            answer = None
+                bubbles = elem.find_elements(By.CLASS_NAME, "business-review-comment-content__bubble")
+                if bubbles:
+                    answer = bubbles[0].text
+            except Exception:
+                pass
 
         return {
             'name': name,
@@ -219,7 +219,7 @@ class YandexParser:
         self.id_yandex = id_yandex
 
     def __open_page(self):
-        url = f'https://yandex.ru/maps/org/{self.id_yandex}/reviews/'
+        url = f'https://yandex.ru/maps/org/doktor_linz/{self.id_yandex}/reviews/'
         
         chrome_options = Options()
         chrome_options.add_argument('--no-sandbox')
@@ -234,7 +234,7 @@ class YandexParser:
         chrome_options.add_argument('--disable-background-timer-throttling')
         chrome_options.add_argument('--disable-backgrounding-occluded-windows')
         chrome_options.add_argument('--disable-renderer-backgrounding')
-        chrome_options.add_argument('--headless')
+        #chrome_options.add_argument('--headless')
         chrome_options.add_argument('--log-level=3')  # Уменьшаем уровень логов
         chrome_options.add_argument('--disable-logging')  # Отключаем логи
         
