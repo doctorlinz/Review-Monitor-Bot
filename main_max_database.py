@@ -495,7 +495,7 @@ def format_datetime(dt_value):
                     dt = datetime.strptime(dt_value, '%Y-%m-%d %H:%M:%S')
             else:
                 return str(dt_value)
-        tz = timezone(timedelta(hours=10))
+        tz = timezone(timedelta(hours=4))
         dt = dt.astimezone(tz)
         return dt.strftime("%H:%M:%S %d.%m.%Y")
     except (ValueError, AttributeError) as e:
@@ -632,7 +632,7 @@ def parse_yandex_reviews(company_id, existing_ids):
         if review_id in existing_ids:
             continue
         if review['date']:
-            timestamp_ms = (review['date'] + 10 * 3600) * 1000
+            timestamp_ms = (review['date'] + 4 * 3600) * 1000
         else:
             timestamp_ms = int(time.time() * 1000)
         new_reviews.append({
