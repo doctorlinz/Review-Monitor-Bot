@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 *.db
 *.log
+reviews.db
