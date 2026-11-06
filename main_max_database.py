@@ -18,8 +18,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # === Конфигурация ===
 API_KEY = "6e7e1929-4ea9-4a5d-8c05-d601860389bd"
-BRANCH_URLS = [""]                       # 2GIS отключён
-YANDEX_IDS = [1654386580]
+BRANCH_URLS = [""] # 2GIS отключён
+YANDEX_IDS = [1035905852,1002768398,1802918957,1248928212,1773065452,140514085606,1654386580,215849370709] # 8 салонов оптики
 DB_FILE = "reviews.db"
 
 # === MAX Messenger ===
@@ -387,7 +387,7 @@ class YandexParser:
         chrome_options.add_argument('--disable-background-timer-throttling')
         chrome_options.add_argument('--disable-backgrounding-occluded-windows')
         chrome_options.add_argument('--disable-renderer-backgrounding')
-        chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('--disable-logging')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
