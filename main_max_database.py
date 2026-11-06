@@ -20,6 +20,16 @@ from selenium.webdriver.support import expected_conditions as EC
 API_KEY = "6e7e1929-4ea9-4a5d-8c05-d601860389bd"
 BRANCH_URLS = [""] # 2GIS отключён
 YANDEX_IDS = [1035905852,1002768398,1802918957,1248928212,1773065452,140514085606,1654386580,215849370709] # 8 салонов оптики
+YANDEX_SALONS = {
+    1035905852:   "ул. Ленинская, 301, Самара",
+    1002768398:   "ул. Ленинградская, 40, Самара",
+    1802918957:   "пр. Ленина, 3, Самара",
+    1248928212:   "ул. Революционная, 135А, Самара",
+    1773065452:   "ул. Георгия Димитрова, 100, Самара",
+    140514085606: "ул. Победы, 90, Самара",
+    1654386580:   "ул. Ново-Вокзальная, 146, Самара",
+    215849370709: "ул. Советской Армии, 239, Самара",
+} # 8 салонов оптики с адресами 
 DB_FILE = "reviews.db"
 
 # === MAX Messenger ===
@@ -637,7 +647,7 @@ def parse_yandex_reviews(company_id, existing_ids):
             timestamp_ms = int(time.time() * 1000)
         new_reviews.append({
             "review_id": review_id,
-            "address": f"Яндекс ID: {company_id}",
+            "address": YANDEX_SALONS.get(company_id, f"ID: {company_id}"),
             "date": timestamp_ms,
             "author": review['name'],
             "rating": review['stars'],
